@@ -13,8 +13,8 @@ PLOT = False
 (train_images, train_labels), (test_images, test_labels) = load_data()
 print(train_images.shape, train_labels.shape, test_images.shape, test_labels.shape)
 
-img_height = 32
-img_width = 32
+img_height = 64
+img_width = 64
 
 # Normalize pixel values to be between 0 and 1
 train_images, test_images = train_images / 255.0, test_images / 255.0
@@ -61,9 +61,9 @@ if PLOT:
 
 #                                           CONFIGURE MODEL
 model = models.Sequential()
-model.add(layers.Resizing(32, 32))
+model.add(layers.Resizing(img_height, img_width))
 model.add(data_augmentation)
-model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)))
 model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 model.add(layers.MaxPooling2D((2, 2)))
@@ -119,7 +119,7 @@ converter.representative_dataset = representative_data_gen
 # Ensure that if any ops can't be quantized, the converter throws an error
 converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 # Set the input and output tensors to uint8 (APIs added in r2.3)
-converter.inference_input_type = tf.uint8
+#converter.inference_input_type = tf.uint8
 #converter.inference_output_type = tf.uint8 ## TODO: Try removing this line
 tflite_model = converter.convert()
 

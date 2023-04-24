@@ -71,8 +71,8 @@ _MODEL_INFO = {
         ModelSpecificInfo(
             name="Fruit image classifier",
             version="v1",
-            image_width=32,
-            image_height=32,
+            image_width=64,
+            image_height=64,
             image_min=0,
             image_max=255,
             mean=[127.5],
