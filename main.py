@@ -115,7 +115,7 @@ if PLOT:
 
 
 ##                                          SAVE TFLITE MODEL
-TF_MODEL_FILE_PATH = 'model.tflite'
+TF_MODEL_FILE_PATH = 'fruit.tflite'
 
 def representative_data_gen():
   for input_value in tf.data.Dataset.from_tensor_slices(train_images).batch(1).take(100):
@@ -129,7 +129,7 @@ converter.representative_dataset = representative_data_gen
 converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 # Set the input and output tensors to uint8 (APIs added in r2.3)
 converter.inference_input_type = tf.uint8
-converter.inference_output_type = tf.uint8
+converter.inference_output_type = tf.uint8 ## TODO: Try removing this line
 tflite_model = converter.convert()
 
 # Save the model.
@@ -144,15 +144,15 @@ interpreter = tf.lite.Interpreter(model_path=TF_MODEL_FILE_PATH)
 
 print(interpreter.get_signature_list())
 
-classify_lite = interpreter.get_signature_runner('serving_default')
-classify_lite
+# classify_lite = interpreter.get_signature_runner('serving_default')
+# classify_lite
 
-predictions_lite = classify_lite(resizing_input=test_images[0:1])['dense_1']
-score_lite = tf.nn.softmax(predictions_lite)
-print (score_lite)
-print(
-    "This image most likely belongs to {} with a {:.2f} percent confidence."
-    .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
-)
-plt.imshow(train_images[0])
-plt.show()
+# predictions_lite = classify_lite(resizing_input=test_images[0:1])['dense_1']
+# score_lite = tf.nn.softmax(predictions_lite)
+# print (score_lite)
+# print(
+#     "This image most likely belongs to {} with a {:.2f} percent confidence."
+#     .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
+# )
+# plt.imshow(train_images[0])
+# plt.show()

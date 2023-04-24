@@ -1,0 +1,1 @@
+python ./metadata_writer_for_image_classifier.py --model_file=fruit.tflite --label_file=./labels.txt --export_directory=model_with_metadata
