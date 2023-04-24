@@ -1,12 +1,12 @@
 import tensorflow as tf
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
-from tensorflow.keras import datasets, layers, models
+from keras import datasets, layers, models
 import matplotlib.pyplot as plt
 from data import load_data
-import tensorflow.keras as keras
+import keras as keras
 import numpy as np
 
-epochs  = 2
+epochs  = 20
 PLOT = False
 
 #                                           LOAD IMAGES
@@ -17,9 +17,15 @@ img_height = 32
 img_width = 32
 
 # Normalize pixel values to be between 0 and 1
-#train_images, test_images = train_images / 255.0, test_images / 255.0
+train_images, test_images = train_images / 255.0, test_images / 255.0
 
-class_names = ['Apple', 'Banana', 'Grape', 'Mango', 'Strawberry']
+class_names = []
+# Load class names from ./labels.txt
+with open("./labels.txt", "r") as f:
+      class_names = f.read().splitlines()
+
+
+
 if PLOT:
     plt.figure(figsize=(10,10))
     for i in range(25):
@@ -37,8 +43,7 @@ if PLOT:
 #                                           AUGMENTATION
 data_augmentation = keras.Sequential(
   [
-    layers.RandomFlip("horizontal"),
-                      
+    layers.RandomFlip("horizontal"),        
     layers.RandomRotation(0.1),
     layers.RandomZoom(0.1),
   ]
@@ -53,24 +58,10 @@ if PLOT:
 
     plt.show()
 
-#augmented_train_images = data_augmentation(train_images)
-#augmented_test_images = data_augmentation(test_images)
-
-#train_images = np.concatenate((train_images, augmented_train_images))
-#train_labels = np.concatenate((train_labels, train_labels))
-#test_images = np.concatenate((test_images, augmented_test_images))
-#test_labels = np.concatenate((test_labels, test_labels))
-
-
-
 
 #                                           CONFIGURE MODEL
-
-
-
 model = models.Sequential()
 model.add(layers.Resizing(32, 32))
-model.add(layers.Rescaling(1./255))
 model.add(data_augmentation)
 model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)))
 model.add(layers.MaxPooling2D((2, 2)))
@@ -129,7 +120,7 @@ converter.representative_dataset = representative_data_gen
 converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 # Set the input and output tensors to uint8 (APIs added in r2.3)
 converter.inference_input_type = tf.uint8
-converter.inference_output_type = tf.uint8 ## TODO: Try removing this line
+#converter.inference_output_type = tf.uint8 ## TODO: Try removing this line
 tflite_model = converter.convert()
 
 # Save the model.
@@ -138,21 +129,21 @@ with open(TF_MODEL_FILE_PATH, 'wb') as f:
 
 
 
- # The default path to the saved TensorFlow Lite model
+# The default path to the saved TensorFlow Lite model
 
 interpreter = tf.lite.Interpreter(model_path=TF_MODEL_FILE_PATH)
 
 print(interpreter.get_signature_list())
 
-# classify_lite = interpreter.get_signature_runner('serving_default')
-# classify_lite
+classify_lite = interpreter.get_signature_runner('serving_default')
+classify_lite
 
-# predictions_lite = classify_lite(resizing_input=test_images[0:1])['dense_1']
-# score_lite = tf.nn.softmax(predictions_lite)
-# print (score_lite)
-# print(
-#     "This image most likely belongs to {} with a {:.2f} percent confidence."
-#     .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
-# )
-# plt.imshow(train_images[0])
-# plt.show()
+predictions_lite = classify_lite(resizing_input=test_images[0:1])['dense_1']
+score_lite = tf.nn.softmax(predictions_lite)
+print (score_lite)
+print(
+    "This image most likely belongs to {} with a {:.2f} percent confidence."
+    .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
+)
+plt.imshow(train_images[0])
+plt.show()

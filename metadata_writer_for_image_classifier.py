@@ -32,6 +32,11 @@ from tflite_support import metadata as _metadata
 
 FLAGS = flags.FLAGS
 
+class_names = []
+# Load class names from ./labels.txt
+with open("./labels.txt", "r") as f:
+    class_names = f.read().splitlines()
+
 
 def define_flags():
   flags.DEFINE_string("model_file", None,
@@ -72,7 +77,7 @@ _MODEL_INFO = {
             image_max=255,
             mean=[127.5],
             std=[127.5],
-            num_classes=5,
+            num_classes=len(class_names),
             author="JoshuaPeddle")
 }
 

@@ -22,7 +22,12 @@ def load_data():
     """
     # Define class names
 
-    class_names = ['Apple', 'Banana', 'Grape', 'Mango', 'Strawberry']
+    class_names = []
+
+    # Load class names from ./labels.txt
+    with open("./labels.txt", "r") as f:
+        class_names = f.read().splitlines()
+
 
     # Define data directories
     train_dir = "./data/train"
