@@ -6,18 +6,18 @@ from data import load_data
 import tensorflow.keras as keras
 import numpy as np
 
-epochs  = 100
-PLOT = True
+epochs  = 2
+PLOT = False
 
 #                                           LOAD IMAGES
 (train_images, train_labels), (test_images, test_labels) = load_data()
 print(train_images.shape, train_labels.shape, test_images.shape, test_labels.shape)
 
-img_height = train_images.shape[1]
-img_width = train_images.shape[2]
+img_height = 32
+img_width = 32
 
 # Normalize pixel values to be between 0 and 1
-train_images, test_images = train_images / 255.0, test_images / 255.0
+#train_images, test_images = train_images / 255.0, test_images / 255.0
 
 class_names = ['Apple', 'Banana', 'Grape', 'Mango', 'Strawberry']
 if PLOT:
@@ -37,17 +37,14 @@ if PLOT:
 #                                           AUGMENTATION
 data_augmentation = keras.Sequential(
   [
-    layers.RandomFlip("horizontal",
-                      input_shape=(img_height,
-                                  img_width,
-                                  3)),
+    layers.RandomFlip("horizontal"),
+                      
     layers.RandomRotation(0.1),
     layers.RandomZoom(0.1),
   ]
 )
 if PLOT:
     plt.figure(figsize=(10, 10))
-
     for i in range(9):
         augmented_image = data_augmentation(train_images[0:2])
         plt.subplot(3, 3, i + 1)
@@ -68,23 +65,27 @@ if PLOT:
 
 
 #                                           CONFIGURE MODEL
+
+
+
 model = models.Sequential()
+model.add(layers.Resizing(32, 32))
+model.add(layers.Rescaling(1./255))
 model.add(data_augmentation)
-model.add(layers.Conv2D(img_width, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)))
+model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)))
 model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-model.add(layers.Dropout(0.2)),
 model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Dropout(0.15))
 model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 model.add(layers.Flatten())
-model.add(layers.Dropout(0.3))
 model.add(layers.Dense(128, activation='relu'))
-model.add(layers.BatchNormalization())
+model.add(layers.Dropout(0.25))
 model.add(layers.Dense(len(class_names)))
-model.summary()
+
 model.compile(optimizer='adam',
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              metrics=['accuracy'])
+              metrics=['accuracy', 'mse', tf.keras.metrics.SparseTopKCategoricalAccuracy(k=2, name="top_2")]) # top 3 accuracy
 
 history = model.fit(train_images, train_labels, epochs=epochs, 
                     validation_data=(test_images, test_labels))
@@ -115,8 +116,20 @@ if PLOT:
 
 ##                                          SAVE TFLITE MODEL
 TF_MODEL_FILE_PATH = 'model.tflite'
+
+def representative_data_gen():
+  for input_value in tf.data.Dataset.from_tensor_slices(train_images).batch(1).take(100):
+    yield [input_value]
+
 # Convert the model.
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+converter.representative_dataset = representative_data_gen
+# Ensure that if any ops can't be quantized, the converter throws an error
+converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+# Set the input and output tensors to uint8 (APIs added in r2.3)
+converter.inference_input_type = tf.uint8
+converter.inference_output_type = tf.uint8
 tflite_model = converter.convert()
 
 # Save the model.
@@ -134,7 +147,7 @@ print(interpreter.get_signature_list())
 classify_lite = interpreter.get_signature_runner('serving_default')
 classify_lite
 
-predictions_lite = classify_lite(sequential_input=test_images[0:1])['dense_1']
+predictions_lite = classify_lite(resizing_input=test_images[0:1])['dense_1']
 score_lite = tf.nn.softmax(predictions_lite)
 print (score_lite)
 print(

@@ -39,8 +39,8 @@ def load_data():
     test_loader  = tf.keras.preprocessing.image.ImageDataGenerator()
 
     # Load data
-    train_data = train_loader.flow_from_directory(train_dir, target_size=(64, 64), batch_size=sum(n_objects_per_class_train), class_mode='categorical')
-    test_data  = test_loader.flow_from_directory(test_dir, target_size=(64, 64), batch_size=sum(n_objects_per_class_test), class_mode='categorical')
+    train_data = train_loader.flow_from_directory(train_dir, target_size=(32, 32), batch_size=sum(n_objects_per_class_train), class_mode='categorical')
+    test_data  = test_loader.flow_from_directory(test_dir, target_size=(32, 32), batch_size=sum(n_objects_per_class_test), class_mode='categorical')
     train_images = train_data[0][0]
     train_labels = train_data[0][1]
     test_images = test_data[0][0]
