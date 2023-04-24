@@ -61,9 +61,9 @@ all_class_paths = [glob(f"./{name}/*") for name in class_names]
 # Define training, validation, and testing size
 total_size = sum([len(paths) for paths in all_class_paths])
 
-train_ratio = 0.95
+train_ratio = 0.80
 valid_ratio = 0.00
-test_ratio  = 0.05
+test_ratio  = 0.20
 
 train_size = int(total_size * train_ratio)
 valid_size = int(total_size * valid_ratio)
