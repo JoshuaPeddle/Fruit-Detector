@@ -1,0 +1,6 @@
+/data/src
+/data/test
+/data/train
+/data/valid
+/__pycache__
+/venv
