@@ -122,8 +122,7 @@ converter.representative_dataset = representative_data_gen
 # Ensure that if any ops can't be quantized, the converter throws an error
 converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 # Set the input and output tensors to uint8 (APIs added in r2.3)
-converter.inference_input_type = tf.uint8
-#converter.inference_output_type = tf.uint8 ## TODO: Try removing this line
+#converter.inference_input_type = tf.uint8
 tflite_model = converter.convert()
 
 # Save the model.

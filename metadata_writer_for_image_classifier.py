@@ -146,7 +146,7 @@ class MetadataPopulatorForImageClassifier(object):
     output_meta.content.contentPropertiesType = (
         _metadata_fb.ContentProperties.FeatureProperties)
     output_stats = _metadata_fb.StatsT()
-    output_stats.max = [1.0]
+    output_stats.max = [255.0]
     output_stats.min = [0.0]
     output_meta.stats = output_stats
     label_file = _metadata_fb.AssociatedFileT()
