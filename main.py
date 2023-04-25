@@ -10,15 +10,15 @@ epochs  = 5
 PLOT = False
 
 #                                           LOAD IMAGES
-(train_images, train_labels), (test_images, test_labels) = load_data()
+(train_images, train_labels), (test_images, test_labels), (val_images, val_labels) = load_data()
 print(train_images.shape, train_labels.shape, test_images.shape, test_labels.shape)
 
 img_height = 64
 img_width = 64
 
 # Normalize pixel values to be between 0 and 1
-train_images, test_images = train_images / 255.0, test_images / 255.0
-print(train_images)
+train_images, test_images, val_images = train_images / 255.0, test_images / 255.0, val_images / 255.0
+
 class_names = []
 # Load class names from ./labels.txt
 with open("./labels.txt", "r") as f:
@@ -135,18 +135,23 @@ with open(TF_MODEL_FILE_PATH, 'wb') as f:
 interpreter = tf.lite.Interpreter(model_path=TF_MODEL_FILE_PATH)
 
 print(interpreter.get_signature_list())
-
+## TODO: Change to validation set
 classify_lite = interpreter.get_signature_runner('serving_default')
 classify_lite
-
-predictions_lite = classify_lite(resizing_input=test_images[0:1])['dense_1']
-print(predictions_lite)
-score_lite = tf.nn.softmax(predictions_lite)
-print (score_lite)
-print(
-    "This image most likely belongs to {} with a {:.2f} percent confidence."
-    .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
-)
-print("Should have been " , test_labels[0])
-plt.imshow(test_images[0])
-plt.show()
+n= 0
+try:
+  while True:
+    predictions_lite = classify_lite(resizing_input=val_images[n:n+1])['dense_1']
+    print(predictions_lite)
+    score_lite = tf.nn.softmax(predictions_lite)
+    print (score_lite)
+    print(
+        "This image most likely belongs to {} with a {:.2f} percent confidence."
+        .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
+    )
+    print("Should have been " , val_labels[n])
+    plt.imshow(val_images[n])
+    plt.show()
+    n+=1
+except KeyboardInterrupt:
+  print('interrupted!')
