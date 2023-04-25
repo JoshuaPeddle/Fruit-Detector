@@ -6,7 +6,7 @@ from data import load_data
 import keras as keras
 import numpy as np
 
-epochs  = 2
+epochs  = 10
 PLOT = False
 
 #                                           LOAD IMAGES
