@@ -34,7 +34,7 @@ files = os.listdir("./src")
 shutil.copytree("./src", "./",dirs_exist_ok=True)
 
 # Define class names and number of images per class
-class_names = ['Apple', 'Banana', 'Grape', 'Mango', 'Strawberry']
+class_names = ['Apple', 'Banana', 'Grape', 'Mango', 'Orange', 'Plum', 'Strawberry']
 n_images_per_class = len(os.listdir(f"./{class_names[0]}"))
 
 # Define train, valid, and test directories and create them if they don't exist

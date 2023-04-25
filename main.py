@@ -65,16 +65,16 @@ model.add(layers.Resizing(img_height, img_width))
 model.add(data_augmentation)
 model.add(layers.Conv2D(64, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)))
 model.add(layers.MaxPooling2D((2, 2)))
-model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.Conv2D(128, (3, 3), activation='relu'))
 model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Dropout(0.15))
-model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.Conv2D(128, (3, 3), activation='relu'))
 model.add(layers.Flatten())
-model.add(layers.Dense(128, activation='relu'))
+model.add(layers.Dense(256, activation='relu'))
 model.add(layers.Dropout(0.25))
 model.add(layers.Dense(len(class_names)))
 
-model.compile(optimizer='adam',
+model.compile(keras.optimizers.Adam(learning_rate=0.0005, beta_1=0.9, beta_2=0.999, amsgrad=True),
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy', 'mse', tf.keras.metrics.SparseTopKCategoricalAccuracy(k=2, name="top_2")]) # top 3 accuracy
 
