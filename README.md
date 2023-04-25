@@ -10,12 +10,12 @@ The current list of classified objects can be found [here](labels.txt).
 
 1. Create train/test/validation sets using [this script](/data/data_splitting.py).
 
-2. Train a Tensorflow classifier based on the split data. Hyperparameters can be adjusted in (main.py)[main.py].
+2. Train a Tensorflow classifier based on the split data. Hyperparameters can be adjusted in [main.py](main.py).
 
 3. Convert the model to a TensorFlow Lite compatible tflite model.
 
 4. Add metadata to the tflite model using the
-(metadata writer)[metadata_writer_for_image_classifier.py]
+[metadata writer](metadata_writer_for_image_classifier.py)
 
 
 ## Instructions 
