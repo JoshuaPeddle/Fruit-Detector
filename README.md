@@ -20,8 +20,6 @@ Finally add metadata to the model
 ```python ./metadata_writer_for_image_classifier.py --model_file=fruit.tflite --label_file=./labels.txt --export_directory=model_with_metadata```
 
 
-
-directory
-
 ## Sources
 https://www.kaggle.com/datasets/chrisfilo/fruit-recognition
+https://www.kaggle.com/datasets/misrakahmed/vegetable-image-dataset
