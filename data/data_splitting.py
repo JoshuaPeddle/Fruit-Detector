@@ -38,8 +38,7 @@ class_names = []
 # Load class names from ./labels.txt
 with open("../labels.txt", "r") as f:
     class_names = f.read().splitlines()
-
-n_images_per_class = len(os.listdir(f"./{class_names[0]}"))
+print("Class Names:", class_names)
 
 # Define train, valid, and test directories and create them if they don't exist
 train_dir = "./train"
@@ -64,6 +63,8 @@ all_class_paths = [glob(f"./{name}/*") for name in class_names]
 
 # Define training, validation, and testing size
 total_size = sum([len(paths) for paths in all_class_paths])
+
+n_images_per_class = min([len(paths) for paths in all_class_paths])
 
 train_ratio = 0.80
 valid_ratio = 0.00
@@ -90,7 +91,7 @@ for paths in all_class_paths:
 train_images = [(path, os.path.join(train_dir, path.split('/')[-2], path.split('/')[-1])) for paths in all_class_paths for path in paths[:train_images_per_class]]
 valid_images = [(path, os.path.join(valid_dir, path.split('/')[-2], path.split('/')[-1])) for paths in all_class_paths for path in paths[train_images_per_class: train_images_per_class + valid_images_per_class]]
 test_images  = [(path, os.path.join(test_dir, path.split('/')[-2], path.split('/')[-1]))  for paths in all_class_paths for path in paths[train_images_per_class+valid_images_per_class: train_images_per_class + valid_images_per_class + test_images_per_class]]
-
+#print(test_images)
 # Move images to their new directories
 for images, data_type in [(train_images, "Training"), (valid_images, "Validation"), (test_images, "Testing")]:
     for (old_path, new_path) in tqdm(images, desc=data_type + " Data"):
@@ -98,7 +99,7 @@ for images, data_type in [(train_images, "Training"), (valid_images, "Validation
 
 # Remove the old directories
 for directory in class_names:
-    os.rmdir("./" + directory)
+    shutil.rmtree("./" + directory)
 
 # Print confirmation message
 print("ALL DONE!!")
