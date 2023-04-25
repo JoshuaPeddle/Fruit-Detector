@@ -6,7 +6,7 @@ from data import load_data
 import keras as keras
 import numpy as np
 
-epochs  = 10
+epochs  = 5
 PLOT = False
 
 #                                           LOAD IMAGES
@@ -18,7 +18,7 @@ img_width = 64
 
 # Normalize pixel values to be between 0 and 1
 train_images, test_images = train_images / 255.0, test_images / 255.0
-
+print(train_images)
 class_names = []
 # Load class names from ./labels.txt
 with open("./labels.txt", "r") as f:
@@ -73,9 +73,7 @@ model.add(layers.Flatten())
 model.add(layers.Dense(256, activation='relu'))
 model.add(layers.Dropout(0.25))
 model.add(layers.Dense(len(class_names)))
-model.add(tf.keras.layers.Normalization(
-    axis=-1, mean=None, variance=None, invert=False
-))
+
 
 model.compile(keras.optimizers.Adam(learning_rate=0.0005, beta_1=0.9, beta_2=0.999, amsgrad=True),
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
@@ -123,6 +121,7 @@ converter.representative_dataset = representative_data_gen
 converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 # Set the input and output tensors to uint8 (APIs added in r2.3)
 #converter.inference_input_type = tf.uint8
+
 tflite_model = converter.convert()
 
 # Save the model.
@@ -140,12 +139,14 @@ print(interpreter.get_signature_list())
 classify_lite = interpreter.get_signature_runner('serving_default')
 classify_lite
 
-predictions_lite = classify_lite(resizing_input=test_images[0:1])['normalization']
+predictions_lite = classify_lite(resizing_input=test_images[0:1])['dense_1']
+print(predictions_lite)
 score_lite = tf.nn.softmax(predictions_lite)
 print (score_lite)
 print(
     "This image most likely belongs to {} with a {:.2f} percent confidence."
     .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
 )
-plt.imshow(train_images[0])
+print("Should have been " , test_labels[0])
+plt.imshow(test_images[0])
 plt.show()
