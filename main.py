@@ -73,6 +73,9 @@ model.add(layers.Flatten())
 model.add(layers.Dense(256, activation='relu'))
 model.add(layers.Dropout(0.25))
 model.add(layers.Dense(len(class_names)))
+model.add(tf.keras.layers.Normalization(
+    axis=-1, mean=None, variance=None, invert=False
+))
 
 model.compile(keras.optimizers.Adam(learning_rate=0.0005, beta_1=0.9, beta_2=0.999, amsgrad=True),
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
@@ -138,7 +141,7 @@ print(interpreter.get_signature_list())
 classify_lite = interpreter.get_signature_runner('serving_default')
 classify_lite
 
-predictions_lite = classify_lite(resizing_input=test_images[0:1])['dense_1']
+predictions_lite = classify_lite(resizing_input=test_images[0:1])['normalization']
 score_lite = tf.nn.softmax(predictions_lite)
 print (score_lite)
 print(
