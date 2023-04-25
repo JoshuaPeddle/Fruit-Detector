@@ -1,7 +1,14 @@
 Apple
 Banana
+Brocoli
+Carrot
+Cucumber
 Grape
+Kiwi
 Mango
 Orange
+Peach
 Plum
+Potato
 Strawberry
+Tomato
