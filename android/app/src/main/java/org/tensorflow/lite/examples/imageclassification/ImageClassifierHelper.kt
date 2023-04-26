@@ -29,7 +29,7 @@ import org.tensorflow.lite.task.core.BaseOptions
 import org.tensorflow.lite.task.core.vision.ImageProcessingOptions
 import org.tensorflow.lite.task.vision.classifier.Classifications
 import org.tensorflow.lite.task.vision.classifier.ImageClassifier
-
+import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
 class ImageClassifierHelper(
     var threshold: Float = 0.5f,
     var numThreads: Int = 2,
@@ -50,9 +50,13 @@ class ImageClassifierHelper(
     }
 
     private fun setupImageClassifier() {
+
+        // ignore 'Unknown' label
+        val denyList = listOf("Unknown")
         val optionsBuilder = ImageClassifier.ImageClassifierOptions.builder()
             .setScoreThreshold(threshold)
             .setMaxResults(maxResults)
+            .setLabelDenyList(denyList)
 
         val baseOptionsBuilder = BaseOptions.builder().setNumThreads(numThreads)
 
@@ -113,6 +117,7 @@ class ImageClassifierHelper(
 
         // Preprocess the image and convert it into a TensorImage for classification.
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
+
 
         val imageProcessingOptions = ImageProcessingOptions.builder()
             .setOrientation(getOrientationFromRotation(rotation))

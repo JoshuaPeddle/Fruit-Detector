@@ -343,16 +343,7 @@ class CameraFragment : Fragment(), ImageClassifierHelper.ClassifierListener {
     ) {
         activity?.runOnUiThread {
             // Show result on bottom sheet
-
-            var result = results
-
-            // [Classifications{categories=[<Category "Unknown" (displayName= score=14.743532 index=14)>], headIndex=0}]
-            // Check if category is Unknown, if so , drop it
-            if (result?.get(0)?.categories?.get(0)?.index == 14) {
-                result = results?.drop(1)
-            }
-
-            classificationResultsAdapter.updateResults(result)
+            classificationResultsAdapter.updateResults(results)
             classificationResultsAdapter.notifyDataSetChanged()
             fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
                 String.format("%d ms", inferenceTime)
