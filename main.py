@@ -9,7 +9,7 @@ from model import get_model
 from data_augmentation import get_data_augmentation
 
 
-epochs  = 5       # How many epochs to train for
+epochs  = 50       # How many epochs to train for
 PLOT = True       # Whether to plot 
 
 #                                           LOAD IMAGES
@@ -57,6 +57,7 @@ if PLOT:
 
 #                                           CONFIGURE MODEL
 
+callback = tf.keras.callbacks.EarlyStopping(monitor='val_mse', patience=2)
 
 model = get_model(False, data_augmentation, img_height, img_width, class_names)
 
@@ -64,7 +65,7 @@ model = get_model(False, data_augmentation, img_height, img_width, class_names)
 #                                          TRAIN MODEL  
 
 history = model.fit(train_images, train_labels, epochs=epochs, 
-                    validation_data=(test_images, test_labels))
+                    validation_data=(test_images, test_labels), callbacks=[callback])
 
 #                                           HANDLE RESULTS
 acc = history.history['accuracy']
@@ -73,7 +74,7 @@ val_acc = history.history['val_accuracy']
 loss = history.history['loss']
 val_loss = history.history['val_loss']
 
-epochs_range = range(epochs)
+epochs_range = range(len(history.history['loss']))
 if PLOT:
     plt.figure(figsize=(8, 8))
     plt.subplot(1, 2, 1)
@@ -119,7 +120,7 @@ with open(TF_MODEL_FILE_PATH, 'wb') as f:
 interpreter = tf.lite.Interpreter(model_path=TF_MODEL_FILE_PATH)
 
 print(interpreter.get_signature_list())
-## TODO: Change to validation set
+
 classify_lite = interpreter.get_signature_runner('serving_default')
 classify_lite
 n= 0
