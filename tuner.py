@@ -47,7 +47,7 @@ tuner = keras_tuner.RandomSearch(
 
 )
 print(tuner.search_space_summary())
-callback = tf.keras.callbacks.EarlyStopping(monitor='val_mse', patience=4)
+callback = tf.keras.callbacks.EarlyStopping(monitor='val_mse', patience=2)
 tuner.search(train_images, train_labels, epochs=tune_epochs, 
                     validation_data=(test_images, test_labels), callbacks=[callback])
 
