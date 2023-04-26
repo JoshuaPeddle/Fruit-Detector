@@ -55,7 +55,7 @@ Hyperparameters can be adjusted in [main.py](main.py).
 To add metadata to the model run the following command. 
 
 ```
-python ./metadata_writer_for_image_classifier.py --model_file=fruit.tflite --label_file=./labels.txt --export_directory=model_with_metadata
+python ./metadata_writer_for_image_classifier.py --model_file=model/fruit.tflite --label_file=./labels.txt --export_directory=model_with_metadata
 ```
 
 Input image height and width must be set to the expected input size of images that will be classified using the model.
