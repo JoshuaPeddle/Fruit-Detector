@@ -20,7 +20,10 @@ def get_model(hp, data_augmentation, img_height, img_width, class_names):
     model.add(layers.Dropout(0.15))
     model.add(layers.Conv2D(128, (3, 3), activation='relu'))
     model.add(layers.Flatten())
-    model.add(layers.Dense(256, activation='relu'))
+    if hp:
+        model.add(layers.Dense(hp.Int("dense1", min_value=128, max_value=256, step=128), activation='relu'))
+    else:
+        model.add(layers.Dense(256, activation='relu'))
     model.add(layers.Dropout(0.25))
     model.add(layers.Dense(len(class_names), activation='relu'))
 
