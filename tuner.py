@@ -1,10 +1,14 @@
-from tensorflow import keras
-from tensorflow.keras import layers
-import tensorflow as tf
 from data import load_data
 import keras_tuner
+import shutil
+import matplotlib.pyplot as plt
+from data_augmentation import get_data_augmentation
 
-EPOCHS = 2
+from model import get_model
+
+
+epochs  = 1       # How many epochs to train for
+PLOT = True       # Whether to plot 
 
 #                                           LOAD IMAGES
 (train_images, train_labels), (test_images, test_labels), (val_images, val_labels) = load_data()
@@ -22,39 +26,15 @@ with open("./labels.txt", "r") as f:
       class_names = f.read().splitlines()
 
 
-
-data_augmentation = keras.Sequential(
-  [
-    layers.RandomFlip("horizontal"),        
-    layers.RandomRotation(0.1),
-    layers.RandomContrast(0.1)
-  ]
-)
+data_augmentation = get_data_augmentation()
 
 
 def build_model(hp):
-    model = keras.Sequential()
-    model.add(layers.Resizing(img_height, img_width))
-    model.add(data_augmentation)
-    model.add(layers.Conv2D(hp.Int("units", min_value=32, max_value=64, step=32), (3, 3), activation='relu', input_shape=(img_height, img_width, 3)))
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Conv2D(128, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D((2, 2)))
-    model.add(layers.Dropout(0.15))
-    model.add(layers.Conv2D(128, (3, 3), activation='relu'))
-    model.add(layers.Flatten())
-    model.add(layers.Dense(256, activation='relu'))
-    model.add(layers.Dropout(0.25))
-    model.add(layers.Dense(len(class_names)))
-
-    model.compile(keras.optimizers.Adam(learning_rate=0.0005, beta_1=0.9, beta_2=0.999, amsgrad=True),
-                loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                metrics=['accuracy', 'mse', tf.keras.metrics.SparseTopKCategoricalAccuracy(k=2, name="top_2")]) # top 3 accuracy
-
+    model = get_model(hp, data_augmentation, img_height, img_width, class_names)
     return model
 
 build_model(keras_tuner.HyperParameters())
-
+shutil.rmtree("results")
 tuner = keras_tuner.RandomSearch(
     hypermodel=build_model,
     objective=("val_accuracy"),
@@ -63,10 +43,11 @@ tuner = keras_tuner.RandomSearch(
     overwrite=True,
     directory="results",
     project_name="fruits",
+
 )
 print(tuner.search_space_summary())
 
-tuner.search(train_images, train_labels, epochs=EPOCHS, 
+tuner.search(train_images, train_labels, epochs=epochs, 
                     validation_data=(test_images, test_labels))
 
 # Get the top 2 models.
@@ -74,7 +55,39 @@ models = tuner.get_best_models(num_models=2)
 best_model = models[0]
 # Build the model.
 # Needed for `Sequential` without specified `input_shape`.
-best_model.build(input_shape=(None, 64, 64))
+best_model.build(input_shape=(None, 64, 64, 3))
 best_model.summary()
 
 tuner.results_summary()
+
+
+# Get the top 2 hyperparameters.
+best_hps = tuner.get_best_hyperparameters(5)
+# Build the model with the best hp.
+model = build_model(best_hps[0])
+# Fit with the entire dataset.
+history = model.fit(train_images, train_labels, epochs=epochs, 
+                    validation_data=(test_images, test_labels))
+
+#                                           HANDLE RESULTS
+acc = history.history['accuracy']
+val_acc = history.history['val_accuracy']
+
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+epochs_range = range(epochs)
+if PLOT:
+    plt.figure(figsize=(8, 8))
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs_range, acc, label='Training Accuracy')
+    plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+    plt.legend(loc='lower right')
+    plt.title('Training and Validation Accuracy')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs_range, loss, label='Training Loss')
+    plt.plot(epochs_range, val_loss, label='Validation Loss')
+    plt.legend(loc='upper right')
+    plt.title('Training and Validation Loss')
+    plt.show()

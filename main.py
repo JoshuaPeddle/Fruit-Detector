@@ -1,13 +1,16 @@
 import tensorflow as tf
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
-from keras import datasets, layers, models
 import matplotlib.pyplot as plt
 from data import load_data
 import keras as keras
 import numpy as np
 
-epochs  = 5
-PLOT = False
+from model import get_model
+from data_augmentation import get_data_augmentation
+
+
+epochs  = 5       # How many epochs to train for
+PLOT = True       # Whether to plot 
 
 #                                           LOAD IMAGES
 (train_images, train_labels), (test_images, test_labels), (val_images, val_labels) = load_data()
@@ -41,14 +44,8 @@ if PLOT:
     plt.show()
 
 #                                           AUGMENTATION
-data_augmentation = keras.Sequential(
-  [
-    layers.RandomFlip("horizontal"),        
-    layers.RandomRotation(0.1),
-    layers.RandomZoom(0.1),
-    layers.RandomContrast(0.1)
-  ]
-)
+data_augmentation = get_data_augmentation()
+
 if PLOT:
     plt.figure(figsize=(10, 10))
     for i in range(9):
@@ -58,26 +55,13 @@ if PLOT:
         plt.axis("off")
     plt.show()
 
-
 #                                           CONFIGURE MODEL
-model = models.Sequential()
-model.add(layers.Resizing(img_height, img_width))
-model.add(data_augmentation)
-model.add(layers.Conv2D(64, (3, 3), activation='relu', input_shape=(img_height, img_width, 3)))
-model.add(layers.MaxPooling2D((2, 2)))
-model.add(layers.Conv2D(128, (3, 3), activation='relu'))
-model.add(layers.MaxPooling2D((2, 2)))
-model.add(layers.Dropout(0.15))
-model.add(layers.Conv2D(128, (3, 3), activation='relu'))
-model.add(layers.Flatten())
-model.add(layers.Dense(256, activation='relu'))
-model.add(layers.Dropout(0.25))
-model.add(layers.Dense(len(class_names)))
 
 
-model.compile(keras.optimizers.Adam(learning_rate=0.0005, beta_1=0.9, beta_2=0.999, amsgrad=True),
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              metrics=['accuracy', 'mse', tf.keras.metrics.SparseTopKCategoricalAccuracy(k=2, name="top_2")]) # top 3 accuracy
+model = get_model(False, data_augmentation, img_height, img_width, class_names)
+
+
+#                                          TRAIN MODEL  
 
 history = model.fit(train_images, train_labels, epochs=epochs, 
                     validation_data=(test_images, test_labels))
@@ -107,7 +91,7 @@ if PLOT:
 
 
 ##                                          SAVE TFLITE MODEL
-TF_MODEL_FILE_PATH = 'fruit.tflite'
+TF_MODEL_FILE_PATH = 'model/fruit.tflite'
 
 def representative_data_gen():
   for input_value in tf.data.Dataset.from_tensor_slices(train_images).batch(1).take(100):
@@ -149,7 +133,7 @@ try:
         "This image most likely belongs to {} with a {:.2f} percent confidence."
         .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
     )
-    print("Should have been " , val_labels[n])
+    print("Should have been " , val_labels[n], class_names[val_labels[n][0]])
     plt.imshow(val_images[n])
     plt.show()
     n+=1
