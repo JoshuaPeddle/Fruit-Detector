@@ -43,14 +43,14 @@ task copyTestModel(type: Copy, dependsOn: downloadModelFile) {
     into project.ext.TEST_ASSETS_DIR
 }
 
-task downloadModelFile3(type: Download) {
-    src 'https://github.com/JoshuaPeddle/Fruit-Detector/raw/master/model_with_metadata/fruit.tflite'
-    dest project.ext.ASSET_DIR + '/fruit.tflite'
-    overwrite true
-}
+//task downloadModelFile3(type: Download) {
+//    src 'https://github.com/JoshuaPeddle/Fruit-Detector/raw/master/model_with_metadata/fruit.tflite'
+//    dest project.ext.ASSET_DIR + '/fruit.tflite'
+//    overwrite true
+//}
 
 
 
 
-preBuild.dependsOn downloadModelFile, downloadModelFile0, downloadModelFile1, downloadModelFile2, downloadModelFile3,
+preBuild.dependsOn downloadModelFile, downloadModelFile0, downloadModelFile1, downloadModelFile2,
         copyTestModel
