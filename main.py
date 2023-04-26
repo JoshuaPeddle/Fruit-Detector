@@ -46,6 +46,7 @@ data_augmentation = keras.Sequential(
     layers.RandomFlip("horizontal"),        
     layers.RandomRotation(0.1),
     layers.RandomZoom(0.1),
+    layers.RandomContrast(0.1)
   ]
 )
 if PLOT:
@@ -55,7 +56,6 @@ if PLOT:
         plt.subplot(3, 3, i + 1)
         plt.imshow(augmented_image[0].numpy())
         plt.axis("off")
-
     plt.show()
 
 
