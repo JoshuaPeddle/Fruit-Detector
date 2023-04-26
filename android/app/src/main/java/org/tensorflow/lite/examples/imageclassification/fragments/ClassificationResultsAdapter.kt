@@ -28,6 +28,7 @@ class ClassificationResultsAdapter :
     RecyclerView.Adapter<ClassificationResultsAdapter.ViewHolder>() {
     companion object {
         private const val NO_VALUE = "--"
+        private const val IGNORE = "Unknown"
     }
 
     private var categories: MutableList<Category?> = mutableListOf()
