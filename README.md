@@ -77,7 +77,6 @@ _MODEL_INFO = {
 https://www.kaggle.com/datasets/chrisfilo/fruit-recognition
 https://www.kaggle.com/datasets/misrakahmed/vegetable-image-dataset
 
-# What i was up to 
-
+## Upcomming
 Implement hyperband for hyperparameter tuning
 https://www.tensorflow.org/tutorials/keras/keras_tuner
