@@ -115,15 +115,19 @@ class ImageClassifierHelper(
             ImageProcessor.Builder()
                 .build()
 
+
         // Preprocess the image and convert it into a TensorImage for classification.
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
 
+        val cropSize = Math.min(image.width, image.height)
+        val resizer =  ResizeWithCropOrPadOp(cropSize, cropSize)
+        val croppedTensorImage = resizer.apply(tensorImage)
 
         val imageProcessingOptions = ImageProcessingOptions.builder()
             .setOrientation(getOrientationFromRotation(rotation))
             .build()
 
-        val results = imageClassifier?.classify(tensorImage, imageProcessingOptions)
+        val results = imageClassifier?.classify(croppedTensorImage, imageProcessingOptions)
         inferenceTime = SystemClock.uptimeMillis() - inferenceTime
         imageClassifierListener?.onResults(
             results,
