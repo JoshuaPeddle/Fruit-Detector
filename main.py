@@ -57,7 +57,7 @@ if PLOT:
 
 #                                           CONFIGURE MODEL
 
-callback = tf.keras.callbacks.EarlyStopping(monitor='val_mse', patience=5)
+callback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=5)
 
 model = get_model(False, data_augmentation, img_height, img_width, class_names)
 
