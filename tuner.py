@@ -29,7 +29,6 @@ with open("./labels.txt", "r") as f:
 
 data_augmentation = get_data_augmentation()
 
-
 def build_model(hp):
     model = get_model(hp, data_augmentation, img_height, img_width, class_names)
     return model
@@ -40,16 +39,19 @@ tuner = keras_tuner.RandomSearch(
     hypermodel=build_model,
     objective=("val_accuracy"),
     max_trials=30,
-    executions_per_trial=2,
+    executions_per_trial=3,
     overwrite=False,
     directory="results",
     project_name="fruits",
 
 )
 print(tuner.search_space_summary())
-callback = tf.keras.callbacks.EarlyStopping(monitor='val_mse', patience=2)
+callback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=5)
 tuner.search(train_images, train_labels, epochs=tune_epochs, 
                     validation_data=(test_images, test_labels), callbacks=[callback])
+
+
+
 
 # Get the top 2 models.
 models = tuner.get_best_models(num_models=2)
