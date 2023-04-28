@@ -41,11 +41,11 @@ def get_model(hp, data_augmentation, img_height, img_width, class_names):
 
     
     if hp:
-        model.compile(keras.optimizers.Adam(learning_rate=hp.Choice('learning_rate', [0.0005,0.0001]), beta_1=0.9, beta_2=0.999, amsgrad=True),
+        model.compile(keras.optimizers.Adam(learning_rate=hp.Choice('learning_rate', [0.001,0.0005,0.0001]), beta_1=0.9, beta_2=0.999, amsgrad=True),
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['accuracy', 'mse', tf.keras.metrics.SparseTopKCategoricalAccuracy(k=2, name="top_2")]) # top 3 accuracy
     else:
-        model.compile(keras.optimizers.Adam(learning_rate=0.0001, beta_1=0.9, beta_2=0.999, amsgrad=True),
+        model.compile(keras.optimizers.Adam(learning_rate=0.0005, beta_1=0.9, beta_2=0.999, amsgrad=True),
                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                 metrics=['accuracy', 'mse', tf.keras.metrics.SparseTopKCategoricalAccuracy(k=2, name="top_2")]) # top 3 accuracy
     return model
