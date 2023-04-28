@@ -30,8 +30,8 @@ from tqdm import tqdm
 # Create a directory for each class and put images in each class directory
 # Run this script to create train, valid, and test directories
 print("Copying images from src to data directory...")
-files = os.listdir("./src")
-shutil.copytree("./src", "./",dirs_exist_ok=True)
+
+
 
 # Define class names and number of images per class
 class_names = []
@@ -39,6 +39,19 @@ class_names = []
 with open("../labels.txt", "r") as f:
     class_names = f.read().splitlines()
 print("Class Names:", class_names)
+
+
+
+# Copy images from src/class_name to data directory
+for name in class_names:
+    # Create directory for each class in data directory
+    if not os.path.exists(name):
+        os.makedirs(name)
+    # Copy images from src/class_name to data/class_name
+    src = f"./src/{name}"
+    dst = f"./{name}"
+    shutil.copytree(src, dst, dirs_exist_ok=True)
+
 
 # Define train, valid, and test directories and create them if they don't exist
 train_dir = "./train"
