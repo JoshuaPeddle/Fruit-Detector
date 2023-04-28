@@ -1,0 +1,16 @@
+Banana
+Blueberry
+Corn
+Green_Apple
+Kiwi
+Mango_Red
+Onion_White
+Orange
+Peach
+Pineapple
+Potato_Red
+Potato_White
+Red_Apple
+Strawberry
+Tomato
+Watermelon
