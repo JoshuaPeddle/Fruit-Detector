@@ -6,8 +6,6 @@ Cucumber
 Kiwi
 Mango
 Orange
-Peach
-Plum
 Potato
 Strawberry
 Tomato
