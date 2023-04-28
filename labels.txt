@@ -1,12 +1,6 @@
 Apple
 Banana
-Brocoli
 Carrot
-Cucumber
-Kiwi
-Mango
 Orange
-Potato
 Strawberry
 Tomato
-Unknown
