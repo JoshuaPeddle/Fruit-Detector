@@ -35,7 +35,7 @@ def get_model(hp, data_augmentation, img_height, img_width, class_names):
     else: model.add(layers.Dropout(0.17))
 
     if hp: model.add(layers.Dense(len(class_names), activation=hp.Choice('finalact', ['relu'])))
-    else: model.add(layers.Dense(len(class_names), activation='relu'))
+    else: model.add(layers.Dense(len(class_names), activation='softmax'))
     
 
 
