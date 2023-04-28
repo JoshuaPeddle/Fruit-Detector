@@ -9,7 +9,7 @@ from model import get_model
 from data_augmentation import get_data_augmentation
 
 
-epochs  = 50       # How many epochs to train for
+epochs  = 400       # How many epochs to train for
 PLOT = True       # Whether to plot 
 
 #                                           LOAD IMAGES
@@ -57,7 +57,7 @@ if PLOT:
 
 #                                           CONFIGURE MODEL
 
-callback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=5)
+callback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=100)
 
 model = get_model(False, data_augmentation, img_height, img_width, class_names)
 
