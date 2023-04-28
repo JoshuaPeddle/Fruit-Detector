@@ -34,17 +34,38 @@ def build_model(hp):
     return model
 
 build_model(keras_tuner.HyperParameters())
-shutil.rmtree('results', ignore_errors=True)
-tuner = keras_tuner.RandomSearch(
+#shutil.rmtree('results', ignore_errors=True)
+# tuner = keras_tuner.RandomSearch(
+#     hypermodel=build_model,
+#     objective=("val_accuracy"),
+#     max_trials=50,
+#     executions_per_trial=2,
+#     overwrite=False,
+#     directory="results",
+#     project_name="fruits",
+
+# )
+
+
+tuner = keras_tuner.Hyperband( # https://keras.io/api/keras_tuner/tuners/hyperband/
     hypermodel=build_model,
     objective=("val_accuracy"),
-    max_trials=50,
+    max_epochs=100,
+    factor=5,
+    hyperband_iterations=50,
+    seed=None,
+    overwrite=True,
     executions_per_trial=2,
-    overwrite=False,
+    hyperparameters=None,
+    tune_new_entries=True,
+    allow_new_entries=True,
+    max_retries_per_trial=1,
+    max_consecutive_failed_trials=3,
     directory="results",
     project_name="fruits",
-
 )
+
+
 print(tuner.search_space_summary())
 callback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=4)
 tuner.search(train_images, train_labels, epochs=tune_epochs, 
