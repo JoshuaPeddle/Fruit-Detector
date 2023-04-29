@@ -30,6 +30,8 @@ import org.tensorflow.lite.task.core.vision.ImageProcessingOptions
 import org.tensorflow.lite.task.vision.classifier.Classifications
 import org.tensorflow.lite.task.vision.classifier.ImageClassifier
 import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
+import org.tensorflow.lite.support.image.ops.ResizeOp
+import org.tensorflow.lite.support.image.ops.ResizeOp.ResizeMethod
 class ImageClassifierHelper(
     var threshold: Float = 0.5f,
     var numThreads: Int = 2,
@@ -52,11 +54,11 @@ class ImageClassifierHelper(
     private fun setupImageClassifier() {
 
         // ignore 'Unknown' label
-        val denyList = listOf("Unknown")
+        //val denyList = listOf("Unknown")
         val optionsBuilder = ImageClassifier.ImageClassifierOptions.builder()
             .setScoreThreshold(threshold)
             .setMaxResults(maxResults)
-            .setLabelDenyList(denyList)
+         //   .setLabelDenyList(denyList)
 
         val baseOptionsBuilder = BaseOptions.builder().setNumThreads(numThreads)
 
@@ -81,11 +83,8 @@ class ImageClassifierHelper(
         val modelName =
             when (currentModel) {
                 MODEL_FRUIT -> "fruit.tflite"
-                MODEL_EFFICIENTNETV0 -> "efficientnet-lite0.tflite"
-                MODEL_EFFICIENTNETV1 -> "efficientnet-lite1.tflite"
-                MODEL_EFFICIENTNETV2 -> "efficientnet-lite2.tflite"
-                MODEL_MOBILENETV1 -> "mobilenetv1.tflite"
-                else -> "mobilenetv1.tflite"
+                MODEL_FruitV1 -> "fruit_V1.tflite"
+                else -> "fruit.tflite"
             }
 
         try {
@@ -107,27 +106,24 @@ class ImageClassifierHelper(
         // Inference time is the difference between the system time at the start and finish of the
         // process
         var inferenceTime = SystemClock.uptimeMillis()
-
+        val cropSize = Math.min(image.width/3, image.height/3)
         // Create preprocessor for the image.
         // See https://www.tensorflow.org/lite/inference_with_metadata/
         //            lite_support#imageprocessor_architecture
-        val imageProcessor =
-            ImageProcessor.Builder()
-                .build()
+        val imageProcessor = ImageProcessor.Builder()
+            .add(ResizeWithCropOrPadOp(cropSize, cropSize))
+            .add(ResizeOp(64, 64, ResizeMethod.BILINEAR))
+            .build();
 
 
         // Preprocess the image and convert it into a TensorImage for classification.
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
 
-        val cropSize = Math.min(image.width, image.height)
-        val resizer =  ResizeWithCropOrPadOp(cropSize, cropSize)
-        val croppedTensorImage = resizer.apply(tensorImage)
-
         val imageProcessingOptions = ImageProcessingOptions.builder()
             .setOrientation(getOrientationFromRotation(rotation))
             .build()
 
-        val results = imageClassifier?.classify(croppedTensorImage, imageProcessingOptions)
+        val results = imageClassifier?.classify(tensorImage, imageProcessingOptions)
         inferenceTime = SystemClock.uptimeMillis() - inferenceTime
         imageClassifierListener?.onResults(
             results,
@@ -163,6 +159,7 @@ class ImageClassifierHelper(
         const val DELEGATE_GPU = 1
         const val DELEGATE_NNAPI = 2
         const val MODEL_FRUIT = 0
+        const val MODEL_FruitV1 = 0
         const val MODEL_EFFICIENTNETV0 = 1
         const val MODEL_EFFICIENTNETV1 = 2
         const val MODEL_EFFICIENTNETV2 = 3
