@@ -126,7 +126,7 @@ classify_lite
 n= 0
 try:
   while True:
-    predictions_lite = classify_lite(resizing_input=val_images[n:n+1])['dense_1']
+    predictions_lite = classify_lite(resizing_input=val_images[n:n+1])['dense_2']
     print(predictions_lite)
     score_lite = tf.nn.softmax(predictions_lite)
     print (score_lite)
