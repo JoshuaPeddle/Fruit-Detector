@@ -50,7 +50,7 @@ build_model(keras_tuner.HyperParameters())
 tuner = keras_tuner.Hyperband( # https://keras.io/api/keras_tuner/tuners/hyperband/
     hypermodel=build_model,
     objective=("val_accuracy"),
-    max_epochs=100,
+    max_epochs=500,
     factor=5,
     hyperband_iterations=50,
     seed=None,
