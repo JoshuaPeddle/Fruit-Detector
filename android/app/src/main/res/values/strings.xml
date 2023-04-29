@@ -44,10 +44,7 @@
     </string-array>
 
     <string-array name="models_spinner_titles">
-        <item>MobileNet V1</item>
-        <item>EfficientNet Lite0</item>
-        <item>EfficientNet Lite1</item>
-        <item>EfficientNet Lite2</item>
         <item>Fruit</item>
+        <item>FruitV1</item>
     </string-array>
 </resources>
