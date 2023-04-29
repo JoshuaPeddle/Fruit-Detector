@@ -9,6 +9,7 @@ LABELS_FILE = 'labels.txt'  # The name of the file to write the labels to.
 import os
 # Get the class names from the directory names in the target directory.
 class_names = os.listdir(TARGET_DIR)
+class_names.sort()
 
 # Write the class names to the labels file.
 with open(LABELS_FILE, 'w') as f:
