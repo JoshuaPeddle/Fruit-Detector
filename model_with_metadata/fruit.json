@@ -1,6 +1,6 @@
 {
   "name": "Fruit image classifier",
-  "description": "Identify the most prominent object in the image from a set of 131 categories.",
+  "description": "Identify the most prominent object in the image from a set of 10 categories.",
   "version": "v1",
   "subgraph_metadata": [
     {
@@ -40,7 +40,7 @@
       "output_tensor_metadata": [
         {
           "name": "probability",
-          "description": "Probabilities of the 131 labels respectively.",
+          "description": "Probabilities of the 10 labels respectively.",
           "content": {
             "content_properties_type": "FeatureProperties"
           },
