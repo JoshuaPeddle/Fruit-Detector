@@ -79,9 +79,9 @@ total_size = sum([len(paths) for paths in all_class_paths])
 
 n_images_per_class = min([len(paths) for paths in all_class_paths])
 
-train_ratio = 0.75
+train_ratio = 0.60
 valid_ratio = 0.01
-test_ratio  = 0.24
+test_ratio  = 0.39
 
 train_size = int(total_size * train_ratio)
 valid_size = int(total_size * valid_ratio)
