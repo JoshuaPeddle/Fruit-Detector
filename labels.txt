@@ -1,5 +1,10 @@
-Apple
+Apple Red 1
 Banana
-Orange
-Tomato
-Unknown
+Kiwi
+Lemon
+Onion Red
+Onion White
+Peach
+Potato Red
+Raspberry
+Strawberry

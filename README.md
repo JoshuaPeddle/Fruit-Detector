@@ -80,3 +80,5 @@ https://www.kaggle.com/datasets/misrakahmed/vegetable-image-dataset
 ## Upcomming
 Implement hyperband for hyperparameter tuning
 https://www.tensorflow.org/tutorials/keras/keras_tuner
+
+Try implemnting LSTM  https://machinelearningmastery.com/cnn-long-short-term-memory-networks/

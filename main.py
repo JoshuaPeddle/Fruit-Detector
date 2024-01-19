@@ -57,7 +57,7 @@ if PLOT:
 
 #                                           CONFIGURE MODEL
 
-callback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=30)
+callback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=10)
 
 model = get_model(False, data_augmentation, img_height, img_width, class_names)
 
@@ -126,7 +126,7 @@ classify_lite
 n= 0
 try:
   while True:
-    predictions_lite = classify_lite(resizing_input=val_images[n:n+1])['dense_1']
+    predictions_lite = classify_lite(resizing_input=val_images[n:n+1])['dense_2']
     print(predictions_lite)
     score_lite = tf.nn.softmax(predictions_lite)
     print (score_lite)
